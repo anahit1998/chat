@@ -1,32 +1,41 @@
 const User = require('./user.schema');
 
-const signUpPost = async (req, res) => {
+const signUp = async (req, response) => {
   const user = req.body;
-  console.log(user,'user');
   const newUser = new User({
-      username: user.username,
-      password: user.password,
-      verification: user.verification,
-      email: user.email
+    username: user.username,
+    password: user.password,
+    verification: user.verification,
+    email: user.email
   });
-  const isValid = newUser.validate(user).then(
-    console.log('seccess')
-  )
-  .catch((err) => {
-    console.log('catch error', err);
-  });
+  User.validate(user,
+    () => {
+      User.find({ 'username': user.username }, (err, res) => {
+        if (err) {
+          response.send({ 'error': 'err.details[0].message' });
+          console.log(err);
+        }
+        else if (res.length) {
+          response.send({ 'error': 'Your username alredy used!' })
+        } else {
+          newUser.save();
+          response.send({ 'id': newUser._id });
+        }
+      }
+      );
+    },
+    (err) => {
+      response.send({ 'error': err.details[0].message });
+      console.log(err);
+    });
+};
 
-  console.log('isValid', isValid);
-  if (isValid.error) {
-      console.log('validation error', isValid.error);
-  }
-  try {
-      let savedUser = await newUser.save();
-  } catch (err) {
-    console.log('save user error', err);
-  }
+const signIn = async (req, response) => {
+  console.log('login', req.query);
+
 };
 
 module.exports = {
-  signUpPost
+  signUp,
+  signIn
 };

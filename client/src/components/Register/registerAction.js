@@ -11,7 +11,11 @@ export const signUp = (user, cb) => {
       })
       .then((response) => {
         console.log(response);
-        cb();
+        if (response.data.error) {
+          alert(response.data.error);
+        } else if (response.data.id) {
+          cb();
+        }
       })
       .catch((error) => {
         console.log(error)
