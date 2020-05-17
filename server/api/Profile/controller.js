@@ -1,4 +1,6 @@
 const User = require('./user.schema');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const signUp = async (req, response) => {
   const user = req.body;
@@ -6,7 +8,7 @@ const signUp = async (req, response) => {
     username: user.username,
     password: user.password,
     verification: user.verification,
-    email: user.email
+    email: user.email,
   });
   User.validate(user,
     () => {
@@ -31,8 +33,43 @@ const signUp = async (req, response) => {
 };
 
 const signIn = async (req, response) => {
-  console.log('login', req.query);
+  const user = req.query;
+  User.findOne({ 'username': user.username }, (err, res) => {
+    if (res.password) {
+      bcrypt.compare(user.password, res.password).then((isMatch) => {
+        if (isMatch) {
+          const payload = {
+            id: res._id,
+            name: res.username
+          };
+          jwt.sign(
+            payload,
+            'secret',
+            {
+              expiresIn: 86400
+            },
+            (err, token) => {
+              User.updateOne({ username: user.username }, { token }, [], (err, row) => {
+              });
+              response.json({
+                success: true,
+                token: token
+              });
+            }
+          );
 
+        } else {
+          return response
+            .status(400)
+            .json({ passwordincorrect: "Password incorrect" });
+        }
+      });
+    } else {
+      return response
+        .status(404)
+        .json({ error: 'username' + user.username + 'is not found' });
+    }
+  })
 };
 
 module.exports = {

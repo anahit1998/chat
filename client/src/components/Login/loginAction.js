@@ -11,7 +11,12 @@ export const signIn = (user, cb) => {
       })
       .then((response) => {
         console.log(response);
-        cb();
+        if(response.data.token){
+          localStorage.setItem('token', response.data.token);
+          cb();
+        } else if(response.error) {
+          alert(response.error);
+        }
       })
       .catch((error) => {
         console.log(error)

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { signIn } from 'components/Login/loginAction';
+import { Redirect } from 'react-router-dom';
 import 'components/Login/login.less';
 
 const Login = () => {
@@ -11,6 +12,7 @@ const Login = () => {
 
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
+  const [redirect, setRedirect] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ const Login = () => {
 
 return (
   <div className="register-page-container page" >
+    {redirect ? <Redirect to='/' /> : null}
     <Jumbotron>
       <Form method="post" onSubmit={handleSubmit}>
         <InputGroup className="mb-3">
