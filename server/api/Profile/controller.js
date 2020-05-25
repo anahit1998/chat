@@ -37,6 +37,7 @@ const signIn = async (req, response) => {
   User.findOne({ 'username': user.username }, (err, res) => {
     if (res.password) {
       bcrypt.compare(user.password, res.password).then((isMatch) => {
+        console.log(isMatch, ' ================================');
         if (isMatch) {
           const payload = {
             id: res._id,
@@ -49,7 +50,9 @@ const signIn = async (req, response) => {
               expiresIn: 86400
             },
             (err, token) => {
+              console.log(token, " zzzzzzzzzzzzzzzzzzzzzzz")
               User.updateOne({ username: user.username }, { token }, [], (err, row) => {
+                console.log(err, row, 'updated +++++++++++++++');
               });
               response.json({
                 success: true,
@@ -69,7 +72,10 @@ const signIn = async (req, response) => {
         .status(404)
         .json({ error: 'username' + user.username + 'is not found' });
     }
+    console.log(err, res, 'findeOne');
   })
+  console.log('login', req.query);
+
 };
 
 module.exports = {

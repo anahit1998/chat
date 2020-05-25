@@ -33,7 +33,7 @@ const Login = () => {
 
 return (
   <div className="register-page-container page" >
-    {redirect ? <Redirect to='/' /> : null}
+    {redirect ? <Redirect to='/home' /> : null}
     <Jumbotron>
       <Form method="post" onSubmit={handleSubmit}>
         <InputGroup className="mb-3">
